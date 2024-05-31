@@ -21,20 +21,6 @@ class GatewayDemoApplication{
 			.before(addRequestHeader("Authorization", "Basic dXNlcjpwdw=="))
 			.build()
 	}
-
-	@Bean
-	fun myRoutes(builder: RouteLocatorBuilder): RouteLocator {
-		return builder.routes()
-			.route { p ->
-				p
-					.path("/get")
-					.filters { f -> f.addRequestHeader("Authentication", "Bearer ....") }
-					.uri("http://api.reev.com/integration")
-			}
-			.build()
-	}
-
-
 }
 
 @RestController
