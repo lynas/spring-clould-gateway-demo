@@ -32,9 +32,20 @@ fun main(args: Array<String>) {
 @Configuration
 class ProxyRouterConfig{
 	@Bean
-	fun getRoute(): RouterFunction<ServerResponse> {
-		return route().GET("/get", http("http://localhost:9091/test"))
-			.before(addRequestHeader("Authorization", "Basic dXNlcjpwdw=="))
+	fun openRoute(): RouterFunction<ServerResponse> {
+		return route()
+			.GET("/open", http("http://localhost:9091/open"))
+			.build()
+	}
+
+	@Bean
+	fun securedRoute(): RouterFunction<ServerResponse> {
+		return route()
+			.GET("/secured", http("http://localhost:9091/secured"))
+			.GET("/secured/{segment}", http("http://localhost:9091/secured/"))
+			.POST("/secured", http("http://localhost:9091/secured"))
+			.before(addRequestHeader("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
 			.build()
 	}
 }
+
