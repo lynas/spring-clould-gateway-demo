@@ -3,6 +3,7 @@ package com.lynas.gateway_demo
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.addRequestHeader
+import org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.setPath
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http
 import org.springframework.context.annotation.Bean
@@ -41,11 +42,40 @@ class ProxyRouterConfig{
 	@Bean
 	fun securedRoute(): RouterFunction<ServerResponse> {
 		return route()
-			.GET("/secured", http("http://localhost:9091/secured"))
-			.GET("/secured/{segment}", http("http://localhost:9091/secured/"))
-			.POST("/secured", http("http://localhost:9091/secured"))
-			.before(addRequestHeader("Authorization", "Basic dXNlcjpwYXNzd29yZA=="))
+			.GET("/secured", http("http://localhost:9091"))
+            .before(setPath("/secured"))
+			.before(getAuthHeader())
 			.build()
 	}
+
+    @Bean
+    fun securedRouteWithPathVariable(): RouterFunction<ServerResponse> {
+        return route()
+            .GET("/secured/{segment}", http("http://localhost:9091"))
+            .before(setPath("/secured/{segment}"))
+            .before(getAuthHeader())
+            .build()
+    }
+
+    @Bean
+    fun securedRouteWithPost(): RouterFunction<ServerResponse> {
+        return route()
+            .POST("/secured", http("http://localhost:9091/secured"))
+            .before(getAuthHeader())
+            .build()
+    }
+
+    @Bean
+    fun securedQueryParam(): RouterFunction<ServerResponse> {
+        return route()
+            .GET("/securedQueryParam", http("http://localhost:9091"))
+            .before(setPath("/securedQueryParam"))
+            .before(getAuthHeader())
+            .build()
+    }
+
+
+
+    private fun getAuthHeader() = addRequestHeader("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
 }
 
